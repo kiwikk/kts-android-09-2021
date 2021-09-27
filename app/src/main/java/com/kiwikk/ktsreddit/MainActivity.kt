@@ -1,6 +1,5 @@
-package com.example.ktsreddit
+package com.kiwikk.ktsreddit
 
-import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -11,16 +10,17 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import java.util.*
 import kotlin.random.Random
 
 
 class MainActivity : AppCompatActivity() {
-
-    lateinit var btn: Button
-    lateinit var btn_lang: Button
-    lateinit var imageView: ImageView
-    lateinit var tv: TextView
+    private lateinit var btn: Button
+    private lateinit var btn_lang: Button
+    private lateinit var imageView: ImageView
+    private lateinit var tv: TextView
+    private var color = Color.WHITE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +30,8 @@ class MainActivity : AppCompatActivity() {
         btn_lang = findViewById(R.id.btn_hello_change_lang)
         imageView = findViewById(R.id.iv_hello)
         tv = findViewById(R.id.tv_hello)
+
+        setLayoutColor(savedInstanceState)
 
         var visibility = savedInstanceState?.getBoolean(BTN_CHANGE_KEY) ?: false
         setVisibility(imageView, tv, visibility)
@@ -44,22 +46,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
+    private fun setLayoutColor(savedInstanceState: Bundle?) {
         val layout = findViewById<ConstraintLayout>(R.id.constraint_hello)
-
-        when (newConfig.orientation) {
-            Configuration.ORIENTATION_PORTRAIT -> {
-                layout.setBackgroundColor(Color.WHITE)
-                tv.setTextColor(Color.BLACK)
+        if (savedInstanceState != null) {
+            when(savedInstanceState.getInt(COLOR_KEY)){
+                Color.BLACK -> {
+                    color = Color.WHITE
+                    tv.setTextColor(Color.BLACK)
+                    Log.i(TAG, "COLOR NOW = BLACK")
+                }
+                else -> {
+                    color = Color.BLACK
+                    tv.setTextColor(Color.WHITE)
+                    Log.i(TAG, "COLOR NOW = WHITE")
+                }
             }
-            Configuration.ORIENTATION_LANDSCAPE -> {
-                layout.setBackgroundColor(Color.BLACK)
-                tv.setTextColor(Color.WHITE)
-            }
-            else -> layout.setBackgroundColor(Color.LTGRAY)
+        } else{
+            color = Color.WHITE
         }
+        layout.setBackgroundColor(color)
     }
+
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -68,19 +75,15 @@ class MainActivity : AppCompatActivity() {
 
         outState.putBoolean(BTN_CHANGE_KEY, visibility)
         outState.putString(LANGUAGE_KEY, locale)
+        outState.putInt(COLOR_KEY, color)
 
         Log.i(TAG, "$BTN_CHANGE_KEY = $visibility")
         Log.i(TAG, "$LANGUAGE_KEY = $locale")
     }
 
     fun setVisibility(imageView: ImageView, textView: TextView, visibility: Boolean) {
-        if (visibility) {
-            imageView.visibility = View.VISIBLE
-            textView.visibility = View.VISIBLE
-        } else {
-            imageView.visibility = View.GONE
-            textView.visibility = View.GONE
-        }
+        imageView.isVisible = visibility
+        textView.isVisible = visibility
     }
 
     fun changeLocale(savedInstanceState: Bundle?) {
@@ -116,6 +119,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val LANGUAGE_KEY = "LANGUAGE"
         private const val BTN_CHANGE_KEY = "BUTTON_CHANGED"
+        private const val COLOR_KEY = "HELLO_LAYOUT_COLOR"
         private val TAG = MainActivity::class.simpleName.toString()
     }
 }

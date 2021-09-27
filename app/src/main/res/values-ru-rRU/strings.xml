@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">КтсРеддит</string>
+    <string name="tap_me">Тап ми!</string>
+    <string name="hello_it_s_me">Ето я</string>
+    <string name="change_locale">Сменим локаль</string>
+    <string name="rest">Take some rest</string>
+</resources>
